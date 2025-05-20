@@ -3,8 +3,8 @@ import os
 import certifi
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
-from pymongo import MongoClient
-from pymongo import ServerApi
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 from pytz import timezone
 
 app = FastAPI()
