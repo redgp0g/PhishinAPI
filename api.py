@@ -7,10 +7,7 @@ from pymongo.server_api import ServerApi
 from pytz import timezone
 
 app = FastAPI()
-stringConnection = os.getenv("MONGO_CONNECTION")
-
-if not stringConnection:
-    raise RuntimeError("A variável de ambiente MONGO_CONNECTION não está definida.")
+stringConnection = os.environ.get("MONGO_CONNECTION")
 
 uri = stringConnection
 
@@ -27,6 +24,8 @@ async def read_root():
 
 @app.get("/registrar-clique", response_class=JSONResponse)
 async def registrar_clique(request: Request, nome: str = None):
+    if not stringConnection:
+        raise HTTPException(status_code=500, detail="Conexão com o banco de dados não configurada.")
     ip = request.client.host
     brasilia = timezone('America/Sao_Paulo')
     now = datetime.datetime.now(brasilia)
