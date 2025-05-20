@@ -4,11 +4,13 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from dotenv import load_dotenv
 from pytz import timezone
 
 app = FastAPI()
 stringConnection = os.getenv("MONGO_CONNECTION")
+
+if not stringConnection:
+    raise RuntimeError("A variável de ambiente MONGO_CONNECTION não está definida.")
 
 uri = stringConnection
 
