@@ -7,8 +7,6 @@ from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
 from pytz import timezone
 
-load_dotenv()
-
 app = FastAPI()
 stringConnection = os.getenv("MONGO_CONNECTION")
 
