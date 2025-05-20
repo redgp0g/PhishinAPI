@@ -20,25 +20,28 @@ phishing = db["phishing"]
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
-    return "Olá mundo!"
+    return "Olá "+ os.environ.get('TESTE') + ", você está no servidor de phishing!"
 
 @app.get("/registrar-clique", response_class=JSONResponse)
 async def registrar_clique(request: Request, nome: str = None):
-    if not stringConnection:
-        raise HTTPException(status_code=500, detail="Conexão com o banco de dados não configurada.")
-    ip = request.client.host
-    brasilia = timezone('America/Sao_Paulo')
-    now = datetime.datetime.now(brasilia)
+    try:
+        if not stringConnection:
+            raise HTTPException(status_code=500, detail="Conexão com o banco de dados não configurada.")
+        ip = request.client.host
+        brasilia = timezone('America/Sao_Paulo')
+        now = datetime.datetime.now(brasilia)
 
-    clique = {
-        "nome": nome,
-        "ip": ip,
-        "data_hora": now
-    }
-    resultado = phishing.insert_one(clique)
-    return {
-        "id": str(resultado.inserted_id),
-        "nome": nome,
-        "ip": ip,
-        "data_hora": now
-    }
+        clique = {
+            "nome": nome,
+            "ip": ip,
+            "data_hora": now
+        }
+        resultado = phishing.insert_one(clique)
+        return {
+            "id": str(resultado.inserted_id),
+            "nome": nome,
+            "ip": ip,
+            "data_hora": now
+        }
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"erro": str(e)})
