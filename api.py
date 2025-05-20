@@ -1,20 +1,45 @@
+import datetime
+import os
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
-import uvicorn
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from dotenv import load_dotenv
+from pytz import timezone
+
+load_dotenv()
 
 app = FastAPI()
+stringConnection = os.getenv("MONGO_CONNECTION")
 
-@app.get("/",response_class=HTMLResponse)
-def read_root():
+uri = stringConnection
+
+client = MongoClient(uri, server_api=ServerApi('1'))
+
+db = client.phishing_sch
+
+phishing = db["phishing"]
+
+
+@app.get("/", response_class=HTMLResponse)
+async def read_root():
     return "Olá mundo!"
 
-@app.get("/registrar-clique")
+@app.get("/registrar-clique", response_class=JSONResponse)
 async def registrar_clique(request: Request, nome: str = None):
-    if not nome:
-        raise HTTPException(status_code=400, detail="Parâmetros obrigatórios ausentes")
+    ip = request.client.host
+    brasilia = timezone('America/Sao_Paulo')
+    now = datetime.datetime.now(brasilia)
 
-    return JSONResponse(content={
-        "mensagem": "Clique registrado com sucesso",
+    clique = {
         "nome": nome,
-        "ip": request.client.host
-    })
+        "ip": ip,
+        "data_hora": now
+    }
+    resultado = phishing.insert_one(clique)
+    return {
+        "id": str(resultado.inserted_id),
+        "nome": nome,
+        "ip": ip,
+        "data_hora": now
+    }
