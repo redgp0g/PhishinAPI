@@ -33,7 +33,7 @@ def get_all_clicks():
         return {"error": "Erro ao conectar ao banco de dados"}
 
 @app.get("/registrar-clique", response_class=JSONResponse)
-async def registrar_clique(request: Request, nome: str = None):
+async def registrar_clique(request: Request, nome: str = None, template: str = None):
     ip = request.client.host
     brasilia = timezone('America/Sao_Paulo')
     now = datetime.datetime.now(brasilia)
@@ -41,7 +41,7 @@ async def registrar_clique(request: Request, nome: str = None):
     try:
         with get_conn() as conn:
             cursor = conn.cursor()
-            cursor.execute(f"INSERT INTO phishing (nome, ip, data_hora) VALUES (?, ?, ?)", nome, ip, now)
+            cursor.execute(f"INSERT INTO phishing (nome, ip, data_hora, template) VALUES (?, ?, ?, ?)", nome, ip, now, template)
             conn.commit()
 
         return {
