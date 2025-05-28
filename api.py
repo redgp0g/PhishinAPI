@@ -45,13 +45,11 @@ async def registrar_clique(request: Request, nome: str = None, template: str = N
             conn.commit()
 
         return {
-            "nome": nome,
-            "ip": ip,
-            "data_hora": now.isoformat()
+            "registrado"
         }
     except Exception as e:
         conn.rollback()
-        raise HTTPException(status_code=500, detail=f"Erro ao inserir no banco")
+        raise HTTPException(status_code=500, detail=f"Erro")
 
 
 def get_conn():
